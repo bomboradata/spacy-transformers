@@ -98,9 +98,13 @@ class TransformersWordPiecer(Pipe):
                         segment, seg_words, offset=offset
                     )
                     seg_words = seg_words[:max_seq_length]
-                    for idx in range(max_seq_length, len(seg_align)):
-                        seg_align[idx] = []
-                    assert len(segment) == len(seg_align)
+                    for i, align in enumerate(seg_align):
+                        if len(align) ==0:
+                            continue
+                        if align[-1] < max_seq_length:
+                            continue
+                        else:
+                            seg_align[i] = [x for x in align if x < max_seq_length]
                     sent_words.append(seg_words)
                     sent_align.append(seg_align)
                 sw_flat = self.model.add_special_tokens(sent_words)
