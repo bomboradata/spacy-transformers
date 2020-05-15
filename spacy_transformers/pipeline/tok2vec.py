@@ -217,10 +217,11 @@ def _get_boundary_sensitive_alignment(doc):
     # unaligned, which is how we identify them.
     for sent in get_sents(doc):
         offset = sent._.get(ATTRS.start)
+        align_length = len([word_piece_slice for word_piece_slice in sent._.get(ATTRS.alignment) if len(word_piece_slice)>0])
         for i in range(len(sent._.get(ATTRS.word_pieces))):
             if align_sizes[offset + i] == 0:
-                align_sizes[offset + i] = len(sent)
-                for tok in sent:
+                align_sizes[offset + i] = align_length
+                for tok in sent[:align_length]:
                     wp_rows[tok.i].append(offset + i)
     return wp_rows, align_sizes
 
