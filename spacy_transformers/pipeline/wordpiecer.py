@@ -156,9 +156,6 @@ class TransformersWordPiecer(Pipe):
         docs (iterable): A batch of `Doc` objects.
         outputs (iterable): A batch of outputs.
         """
-        # Set model.max_len to some high value, to avoid annoying prints.
-        max_len = self.model.max_len
-        self.model.max_len = 1e12
         for doc, (wordpieces, alignment) in zip(docs, outputs):
             doc._.set(ATTRS.word_pieces_, wordpieces)
             doc._.set(ATTRS.word_pieces, self.model.convert_tokens_to_ids(wordpieces))
@@ -174,7 +171,6 @@ class TransformersWordPiecer(Pipe):
                     for w in sent:
                         print(w.text, w._.get(ATTRS.alignment))
                 print(doc._.get(ATTRS.word_pieces_))
-                self.model.max_len = max_len
                 raise ValueError(
                     f"Error calculating word pieces for sentences. Total number "
                     f"of wordpieces in the doc was {nr_word}, but adding up the "
@@ -183,7 +179,6 @@ class TransformersWordPiecer(Pipe):
                     f"the tokenizer.add_special_tokens() logic, often when "
                     f"a spaCy sentence aligns against 0 wordpieces."
                 )
-        self.model.max_len = max_len
 
     def use_params(self, params):
         yield
