@@ -1,5 +1,6 @@
 from spacy.pipeline import Pipe
 from spacy.util import minibatch
+import spacy_transformers.util
 import re
 import numpy
 
@@ -94,6 +95,8 @@ class TransformersWordPiecer(Pipe):
                 sent_align = []
                 for segment in sent._.get(ATTRS.segments):
                     seg_words = self.model.tokenize(segment.text)
+                    # DS-4585 Fix
+                    seg_words = [self.model.unk_token if spacy_transformers.util.is_special_token(word) else word for word in seg_words]
                     seg_words, seg_align = self._align(
                         segment, seg_words, offset=offset
                     )
